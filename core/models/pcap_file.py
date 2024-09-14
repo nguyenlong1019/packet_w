@@ -3,6 +3,7 @@ from django.db import models
 
 class PcapFileUpload(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    # user?
     file_upload = models.FileField(upload_to='pcap_files/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
