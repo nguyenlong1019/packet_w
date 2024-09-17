@@ -26,15 +26,15 @@ SECRET_KEY = 'django-insecure-^&etxhys13za!fb2&w!5fi2ulzle=u%rc%4j$v&=1b$_bt#bc%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
+# ALLOWED_HOSTS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-CSRF_TRUSTED_ORIGINS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
+# CSRF_TRUSTED_ORIGINS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
 
 
 # Application definition
@@ -92,15 +92,15 @@ WSGI_APPLICATION = 'packet_server.wsgi.application'
 #     }
 # }
 
-# postgresql://postgres:TuBjlhzCtCbMRztsXhybYheVyfiwqNgQ@autorack.proxy.rlwy.net:37806/railway
+# postgresql://postgres:MAXXUFYwUDsKKwUemEWHYWggUvDFELmE@autorack.proxy.rlwy.net:36656/railway
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'HOST': 'autorack.proxy.rlwy.net',
-        'PORT': '37806',
+        'PORT': '36656',
         'USER': 'postgres',
-        'PASSWORD': 'TuBjlhzCtCbMRztsXhybYheVyfiwqNgQ',
+        'PASSWORD': 'MAXXUFYwUDsKKwUemEWHYWggUvDFELmE',
     }
 }
 
@@ -152,3 +152,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# app_label.ModelName
+# AUTH_USER_MODEL = 'core.CustomUser'

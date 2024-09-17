@@ -1,28 +1,44 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
-<div class="container d-flex align-items-start justify-content-between" style="min-height: 100vh;">
+<div class="container">
+  {% if messages %}
 
-    <form class="pt-3" style="width: 48%;">
+  {% for message in messages %}
+  <div class="notify mt-3 mb-3" id="notify">
+    <div class="notify-message">
+      {{message}}
+    </div>
+    <button type="button" class="close-notify-btn" data-id="notify">
+      <i class="fa-solid fa-x"></i>
+    </button>
+  </div>
+  {% endfor %}
+
+  {% endif %}
+</div>
+
+<div class="container d-flex align-items-start justify-content-between pt-5" style="min-height: 100vh;"> 
+
+    <form class="" method="POST" action="{% url 'login' %}" style="width: 48%;">
+      {% csrf_token %}
+
+      <h2>Đăng nhập</h2>
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-          <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+          <label for="exampleInputEmail1" class="form-label">Email</label>
+          <input style="max-width: 400px;border: 1px solid #4379F2;font-size: 1.6rem;padding: 4px 12px" type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
         </div>
         <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
+          <label for="exampleInputPassword1" class="form-label">Mật khẩu</label>
+          <input style="max-width: 400px;border: 1px solid #4379F2;font-size: 1.6rem;padding: 4px 12px" type="password" name="password" class="form-control" id="exampleInputPassword1" required>
         </div>
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-          <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" style="font-size: 1.6rem;" class="btn btn-primary mb-3">Đăng nhập</button>
+        <p>Chưa có tài khoản? <a href="{% url 'register' %}">Đăng ký</a></p>
     </form>
 
-    <div class="w-50">
-        <img src="" alt="" />
+    <div class="w-50 text-center">
+        <img src="{% static 'assets/images/face-scanner.png' %}" alt="Login Image" style="width: 200px;height: 200px;object-fit: cover;object-position: center;" />
     </div>
 
 </div>
