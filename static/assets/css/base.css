@@ -65,3 +65,20 @@ a {
 .notify.none {
     display: none;
 }
+
+.convert-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.convert-wrapper div {
+    flex: 1;
+}
+
+.convert-wrapper div input {
+    width: 100%;
+    display: inline-block;
+    height: 80%;
+}
