@@ -77,8 +77,9 @@ a {
     flex: 1;
 }
 
-.convert-wrapper div input {
+.convert-wrapper div input.convert-input {
     width: 100%;
     display: inline-block;
     height: 80%;
 }
+
