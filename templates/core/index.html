@@ -2,110 +2,114 @@
 {% load static %}
 {% block content %}
 
-<div class="d-flex align-items-start p-5">
-
-    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true" style="width: max-content;">Browse Capture</button>
-
-      <button class="nav-link" id="v-pills-data-overview-tab" data-bs-toggle="pill" data-bs-target="#v-pills-data-overview" type="button" role="tab" aria-controls="v-pills-data-overview" aria-selected="false">Data Overview</button>
-      
-      <button class="nav-link" id="v-pills-p-statistic-tab" data-bs-toggle="pill" data-bs-target="#v-pills-p-statistic" type="button" role="tab" aria-controls="v-pills-p-statistic" aria-selected="false" style="width: max-content;">Protocols Statistic</button>
-      
-      <button class="nav-link" id="v-pills-dhcp-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dhcp" type="button" role="tab" aria-controls="v-pills-dhcp" aria-selected="false">DHCP</button>
-
-      <button class="nav-link" id="v-pills-src-a-dst-ip-tab" data-bs-toggle="pill" data-bs-target="#v-pills-src-a-dst-ip" type="button" role="tab" aria-controls="v-pills-src-a-dst-ip" aria-selected="false">Src & Dst IP</button>
-      
-      <button class="nav-link" id="v-pills-dst-domain-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dst-domain" type="button" role="tab" aria-controls="v-pills-dst-domain" aria-selected="false">Dst Domain</button> 
-      
-      <button class="nav-link" id="v-pills-http-post-tab" data-bs-toggle="pill" data-bs-target="#v-pills-http-post" type="button" role="tab" aria-controls="v-pills-http-post" aria-selected="false">HTTP POST</button> 
-      
-      <button class="nav-link" id="v-pills-utils-tab" data-bs-toggle="pill" data-bs-target="#v-pills-utils" type="button" role="tab" aria-controls="v-pills-utils" aria-selected="false">Utils</button> 
-      
-      <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</button>
-      
-      <button class="nav-link" id="v-pills-history-tab" data-bs-toggle="pill" data-bs-target="#v-pills-history" type="button" role="tab" aria-controls="v-pills-history" aria-selected="false">History</button>
-      
-      <a href="{% url 'logout' %}" class="btn btn-outline-danger text-center mt-3">Logout</a>
-    </div>
-    
-    
-    
-    <div class="tab-content container-fluid" id="v-pills-tabContent">
-      <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" tabindex="0">
-        Browse File 
-      </div>
-
-      <div class="tab-pane fade" id="v-pills-data-overview" role="tabpanel" aria-labelledby="v-pills-data-overview-tab" tabindex="0">
-        Data Overview
-      </div>
-
-      <div class="tab-pane fade" id="v-pills-p-statistic" role="tabpanel" aria-labelledby="v-pills-p-statistic-tab" tabindex="0">
-        Protocols Statistic 
-      </div>
-
-      <div class="tab-pane fade" id="v-pills-dhcp" role="tabpanel" aria-labelledby="v-pills-dhcp-tab" tabindex="0">
-        DHCP
-      </div> 
-
-      <div class="tab-pane fade" id="v-pills-src-a-dst-ip" role="tabpanel" aria-labelledby="v-pills-src-a-dst-ip-tab" tabindex="0">
-        Src & Dst IP
-      </div>
-
-      <div class="tab-pane fade" id="v-pills-dst-domain" role="tabpanel" aria-labelledby="v-pills-dst-domain-tab" tabindex="0">
-        Dst Domain 
-      </div>
-
-      <div class="tab-pane fade" id="v-pills-http-post" role="tabpanel" aria-labelledby="v-pills-http-post-tab" tabindex="0">
-        HTTP POST
-      </div>
-
-      <div class="tab-pane fade w-100 h-100" id="v-pills-utils" role="tabpanel" aria-labelledby="v-pills-settings-tab" tabindex="0">
-        
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Decode Hex</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Decode Base64</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Convert Time</button>
-          </li>
-        </ul>
-        <div class="tab-content w-100" id="myTabContent">
-          <div class="tab-pane fade show active w-100" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-            <div class="">
-              <div class="convert-wrapper">
-                
-                <div>
-                  <input class="convert-input" type="text" id="" name="" />
-                </div>
-                <p>
-                  <img style="width: 100px;height: 100px;object-fit: cover;object-position: center;" src="{% static 'assets/images/exchange.png' %}" alt="Convert Icon" />
-                </p>
-                <div>
-                  <input class="convert-input" type="text" id="" name="" />
-                </div>
+<div class="container-fluid p-5 main-section">
   
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">Decode Base64</div>
-          <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">Convert Time</div>
-        </div>
+  <div class="side-tabs">
+    <button class="side-tablinks btn mb-3">
+      Browse Capture
+    </button> <br>
+    <button class="side-tablinks btn mb-3">
+      Data Overview
+    </button> <br>
+    <button class="side-tablinks btn mb-3">
+      Protocols Statistic
+    </button> <br> 
 
+    <button class="side-tablinks btn mb-3">
+      DHCP
+    </button> <br> 
 
-      </div>
+    <button class="side-tablinks btn mb-3">
+      Src & Dst IP
+    </button> <br> 
 
-      <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab" tabindex="0">
-        Settings
-      </div>
+    <button class="side-tablinks btn mb-3">
+      Dst Domain
+    </button> <br> 
 
-      <div class="tab-pane fade" id="v-pills-history" role="tabpanel" aria-labelledby="v-pills-history-tab" tabindex="0">
-        History
-      </div>
+    <button class="side-tablinks btn mb-3">
+      HTTP POST
+    </button> <br> 
+
+    <button class="side-tablinks btn mb-3">
+      Utils
+    </button> <br> 
+
+    <button class="side-tablinks btn mb-3">
+      Settings
+    </button> <br> 
+
+    <button class="side-tablinks btn mb-3">
+      History
+    </button> <br> 
+
+    <a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a>
+  </div>
+
+  <div class="side-contents">
+    <div class="side-tabcontent" id="">
+      Browser Capture
+    </div>
+  
+    <div class="side-tabcontent" id="">
+      Data Overview    
+    </div>
+  
+    <div class="side-tabcontent" id="">
+      Protocols Statistic
     </div>
 
-</div>
+    <div class="side-tabcontent" id="">
+      DHCP
+    </div>
+
+    <div class="side-tabcontent" id="">
+      Src & Dst IP 
+    </div> 
+
+    <div class="side-tabcontent" id="">
+      Dst Domain
+    </div>
+
+    <div class="side-tabcontent" id="">
+      HTTP POST
+    </div>
+
+    <div class="side-tabcontent" id="">
+      <!--Convert: c-->
+      <div class="c-tabs">
+        <button class="c-tablinks" onclick="openCTab(event, 'c-decode-hex')" id="defaultOpen">Decode Hex</button>
+        <button class="c-tablinks" onclick="openCTab(event, 'c-decode-base64')">Decode Base64</button>
+        <button class="c-tablinks" onclick="openCTab(event, 'c-time')">Convert Time</button>
+      </div>
+
+      <div id="c-decode-hex" class="c-tabcontent">
+        Decode Hex
+      </div>
+
+      <div id="c-decode-base64" class="c-tabcontent">
+        Decode Base64
+      </div>
+
+      <div id="c-time" class="c-tabcontent">
+        Convert Time 
+      </div>
+
+    </div>
+
+    <div class="side-tabcontent" id="">
+      Settings 
+    </div>
+
+    <div class="side-tabcontent" id="">
+      History
+    </div>
+
+  </div>
+
+  
+<div>
+
+
 
 {% endblock content %}

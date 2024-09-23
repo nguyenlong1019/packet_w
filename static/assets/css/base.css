@@ -66,20 +66,49 @@ a {
     display: none;
 }
 
-.convert-wrapper {
+.main-section {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
+    align-items: start;
+    justify-content: start;
+    gap: 0 24px;
 }
 
-.convert-wrapper div {
+.side-tabs {
+    text-align: center;
+}
+
+.side-contents {
     flex: 1;
 }
 
-.convert-wrapper div input.convert-input {
-    width: 100%;
-    display: inline-block;
-    height: 80%;
+
+.c-tabs {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
 }
 
+.c-tabs button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: .3s;
+}
+
+.c-tabs button:hover {
+    background-color: #ddd;
+}
+
+.c-tabs button.active {
+    background-color: #ccc;
+}
+
+.c-tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
