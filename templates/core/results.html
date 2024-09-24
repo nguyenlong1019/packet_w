@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCAP Analysis Results</title>
+</head>
+<body>
+    <h1>Results for: {{ file_name }}</h1>
+    <h2>Protocol Statistics</h2>
+    <ul>
+        {% for protocol, count in protocol_stats.items %}
+            <li>{{ protocol }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

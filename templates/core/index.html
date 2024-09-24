@@ -48,7 +48,15 @@
 
   <div class="side-contents">
     <div class="side-tabcontent" id="">
-      Browser Capture
+      <form class="" action="{% url 'index' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="formFile" class="form-label">Browse Capture File</label>
+        <div class="mb-3 input-group">
+          <input style="max-width: 600px;" class="form-control" name="file_upload" type="file" id="formFile" required>
+          <button type="submit" class="btn btn-primary">Analysis</button>
+        </div>
+      </form>
+      
     </div>
   
     <div class="side-tabcontent" id="">

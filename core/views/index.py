@@ -4,12 +4,57 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate 
 from django.contrib.auth.models import User
 from core.models.profile import Profile
-from django.contrib import messages
+from django.contrib import messages 
+from core.forms.pcap_form import UploadFileForm 
+from core.models.pcap_file import PcapFileUpload
+import pyshark 
 
 
 @login_required(login_url="/login/")
 def index_view(request):
+    if request.method == 'POST':
+        file_upload = request.FILES['file_upload']
+        pcap = PcapFileUpload.objects.create(user=request.user, file_upload=file_upload)
+
+        pcap_file_path = pcap.file_upload.path 
+        cap = pyshark.FileCapture(pcap_file_path)
+
+        for pkt in cap:
+            print(f"Packet {pkt.number}:")
+            # print(f"    Timestamp: {pkt.sniff_time}")
+            # print(f"    Source IP: {pkt.ip.src}")
+            # print(f"    Destination IP: {pkt.ip.dst}")
+            # print(f"    Protocol: {pkt.highest_layer}")
+            # print(f"    Length: {pkt.length}\n")
+
+
+        return render(request, 'core/index.html', status=200)
+        # return redirect('results')
     return render(request, 'core/index.html', status=200)
+
+
+def analyze_pcap(file_path):
+    cap = pyshark.FileCapture(file_path)
+    protocol_stats = {}
+
+    for pkt in cap:
+        protocol = pkt.highest_layer 
+        protocol_stats[protocol] = protocol_stats.get(protocol, 0) + 1 
+    
+    cap.close()
+    return protocol_stats 
+
+
+def results(request):
+    uploaded_file = PcapFileUpload.objects.last()
+    file_path = uploaded_file.file.path
+    protocol_stats = analyze_pcap(file_path)
+    
+    context = {
+        'protocol_stats': protocol_stats,
+        'file_name': uploaded_file.file.name
+    }
+    return render(request, 'analysis/results.html', context)
 
 
 def login_view(request):
