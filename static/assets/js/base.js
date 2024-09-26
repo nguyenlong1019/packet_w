@@ -37,8 +37,8 @@ const tabContents = document.querySelectorAll('.side-tabcontent');
 function openTab(event, tabIndex) {
   // Loại bỏ class active cho tất cả các button và nội dung tab
   tabLinks.forEach(link => {
-    link.classList.remove('btn-primary');
-    link.classList.add('btn-outline-primary');
+    link.classList.remove('btn-light');
+    link.classList.add('btn-outline-light');
   });
   
   tabContents.forEach(content => {
@@ -46,8 +46,8 @@ function openTab(event, tabIndex) {
   });
 
   // Thêm class active cho button được click và hiển thị nội dung tab tương ứng
-  event.currentTarget.classList.remove('btn-outline-primary');
-  event.currentTarget.classList.add('btn-primary');
+  event.currentTarget.classList.remove('btn-outline-light');
+  event.currentTarget.classList.add('btn-light');
   
   tabContents[tabIndex].style.display = 'block';
 }

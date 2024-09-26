@@ -6,8 +6,14 @@
     box-sizing: border-box;
     font-family: "Nunito", sans-serif;
     /* font-size: 62.5%; */
-    color: #1c1c1c;
+    /* color: #1c1c1c; */
+    color: white;
     scroll-behavior: smooth;
+    background-color: #001F3F;
+}
+
+body {
+    background-color: #001F3F;
 }
 
 .form-label {
@@ -85,7 +91,8 @@ a {
 .c-tabs {
     overflow: hidden;
     border: 1px solid #ccc;
-    background-color: #f1f1f1;
+    /* background-color: #f1f1f1; */
+    background-color: #0d6efd;
 }
 
 .c-tabs button {
@@ -103,7 +110,8 @@ a {
 }
 
 .c-tabs button.active {
-    background-color: #ccc;
+    /* background-color: #ccc; */
+    background-color: #082148;
 }
 
 .c-tabcontent {
@@ -111,4 +119,17 @@ a {
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-top: none;
+}
+
+#example {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+#example img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: 24px;
 }

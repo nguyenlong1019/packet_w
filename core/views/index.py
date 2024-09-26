@@ -12,37 +12,84 @@ import pyshark
 
 @login_required(login_url="/login/")
 def index_view(request):
+    context = {}
     if request.method == 'POST':
         file_upload = request.FILES['file_upload']
         pcap = PcapFileUpload.objects.create(user=request.user, file_upload=file_upload)
 
-        pcap_file_path = pcap.file_upload.path 
-        cap = pyshark.FileCapture(pcap_file_path)
-
-        for pkt in cap:
-            print(f"Packet {pkt.number}:")
-            # print(f"    Timestamp: {pkt.sniff_time}")
-            # print(f"    Source IP: {pkt.ip.src}")
-            # print(f"    Destination IP: {pkt.ip.dst}")
-            # print(f"    Protocol: {pkt.highest_layer}")
-            # print(f"    Length: {pkt.length}\n")
+        # pcap_file_path = pcap.file_upload.path 
+        # cap = pyshark.FileCapture(pcap_file_path)
+        
+        context['id'] = pcap.id 
+        return render(request, 'core/index.html', context, status=200)
+    
+    context['id'] = PcapFileUpload.objects.order_by('uploaded_at').first().id 
+    return render(request, 'core/index.html', context, status=200)
 
 
-        return render(request, 'core/index.html', status=200)
-        # return redirect('results')
-    return render(request, 'core/index.html', status=200)
+def analyze_pcap_api(request, pk):
+    try:
+        pcap = PcapFileUpload.objects.get(pk=pk)
+    except PcapFileUpload.DoesNotExist():
+        return JsonResponse({
+            'flag': False,
+            'data': [], 
+        }, status=404)
 
+    file_path = pcap.file_upload.path 
+    # giao thức lớp mạng: IP, ICMP, ARP, IPv6
+    # giao thức lớp giao vận: TCP, UDP, SCTP, QUIC 
+    # giao thức lớp ứng dụng: HTTP, HTTPS, FTP, DNS, DHCP, SMTP, POP3, IMAP, MQTT 
+    # giao thức bảo mật: TLS, SSL, IPSec 
+    # giao thức chuyển mạch: Ethernet, MPLS, VLAN
 
-def analyze_pcap(file_path):
     cap = pyshark.FileCapture(file_path)
+    
     protocol_stats = {}
 
-    for pkt in cap:
-        protocol = pkt.highest_layer 
-        protocol_stats[protocol] = protocol_stats.get(protocol, 0) + 1 
-    
-    cap.close()
-    return protocol_stats 
+    for packet in cap:
+        protocol = packet.highest_layer # top layer của packet 
+        if protocol in protocol_stats:
+            protocol_stats[protocol] += 1
+        else:
+            protocol_stats[protocol] = 1
+    print("---------------------------------------")
+    print("Thống kê các giao thức trong capture: ")
+    for protocol, count in protocol_stats.items():
+        print(f"{protocol}: {count} packets")
+    print("---------------------------------------")
+
+    for packet in cap:
+        if 'IP' in packet:
+            print(packet)
+            break
+    print("---------------------------------------")
+    for packet in cap:
+        if 'TCP' in packet:
+            print(packet)
+            break 
+    print("---------------------------------------")
+    for packet in cap:
+        if 'UDP' in packet:
+            print(packet)
+            break 
+    print("---------------------------------------")
+    for packet in cap:
+        if 'HTTP' in packet:
+            print(packet)
+            break 
+    print("---------------------------------------")
+    for packet in cap:
+        if 'DNS' in packet:
+            print(packet)
+            break 
+    print("---------------------------------------")
+    for packet in cap:
+        if 'TLS' in packet:
+            print(packet)
+            break
+
+
 
 
 def results(request):
@@ -133,3 +180,31 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+from django.http import FileResponse, Http404, HttpResponse
+import os 
+
+def download_report_demo_view(request):
+    file_path = os.path.join(os.path.dirname(__file__), 'report.docx')
+    print(f"File path: {file_path}")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = 'attachment; filename="report.docx"'
+            return response
+    else:
+        raise Http404("File not found")
+
+
+def download_export_demo_view(request):
+    file_path = os.path.join(os.path.dirname(__file__), 'export.csv')
+    print(f"File path: {file_path}")
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            response = HttpResponse(file.read(), content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="export.csv"'
+            return response
+    else:
+        raise Http404("File not found") 
+

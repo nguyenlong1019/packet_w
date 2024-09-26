@@ -1,0 +1,19 @@
+HTTP POST: Giao thức với HTTP POST sẽ liệt kê sắp xếp theo time và có thể xem chi tiết dữ liệu bên trong  
+Biểu đồ thống kê các method trong giao thức HTTP 
+- hiển thị dạng 
+địa chỉ IP nguồn: port nguồn -> địa chỉ IP đích: port đích 
+Nếu HTTP POST sẽ xử lý cho phép xem các thông tin trong HTTP POST 
+Epoch time  
+Src 
+Host 
+User-Agent 
+Accept 
+Referer 
+Cookie 
+Form item 
+Data 
+
+
+
+tính năng Export: export 
+export object (FTP-DATA object list, http object list, export TLS session key, export as plain text, csv, xml, json)
