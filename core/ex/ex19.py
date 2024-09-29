@@ -1,36 +1,12 @@
 import pyshark
 import json
 from collections import defaultdict
-from datetime import datetime, timedelta 
-import os 
-import django 
-from django.core.files.base import ContentFile  
-import sys 
+from datetime import datetime, timedelta
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'packet_server.settings')
-django.setup()
-
-from core.models.pcap_file import PcapFileUpload 
-
+# Danh sách giao thức mạng hợp lệ
 ALLOWED_PROTOCOLS = {'IP', 'ICMP', 'ARP', 'IPv6', 'ICMPV6', 'TCP', 'UDP', 'QUIC', 'SCTP',
                      'HTTP', 'HTTPS', 'FTP', 'DNS', 'DHCP', 'SMTP', 'POP3', 'IMAP', 
                      'MQTT', 'TLS', 'SSL', 'IPSec', 'Ethernet', 'MPLS', 'VLAN'}
-from django.db import transaction 
-
-
-def process_analysis_pcap(pcap_id):
-    with transaction.atomic():
-        instance = PcapFileUpload.objects.get(id=pcap_id)
-        file_path = instance.file_upload.path  
-        
-        chart_data_json = analyze_pcap_for_chart(file_path, num_intervals=8)
-        json_content = ContentFile(chart_data_json)
-
-        json_filename = f"analysis_{instance.id}.json"
-        instance.analysis_json_file.save(json_filename, json_content)
-
-        instance.save()
-
 
 def analyze_pcap_for_chart(file_path, num_intervals=8):
     protocol_stats = defaultdict(lambda: defaultdict(lambda: {'packet_count': 0, 'total_bytes': 0}))
@@ -122,10 +98,9 @@ def analyze_pcap_for_chart(file_path, num_intervals=8):
             'fill': True,
             'tension': 0.4
         })
-    # print(chart_data_json)
+
     # Chuyển dữ liệu thành JSON để dùng cho vẽ biểu đồ
     return json.dumps(chart_data, indent=4)
-    # return chart_data 
 
 
 def get_color(protocol):
@@ -191,16 +166,9 @@ def get_background_color(protocol):
 
 
 # Ví dụ sử dụng hàm
-# file_path = 'test_data.pcapng'
-# chart_data_json = analyze_pcap_for_chart(file_path, num_intervals=8)  # Phân tích với 8 khoảng thời gian
-# print(chart_data_json)
-# # Lưu dữ liệu chart vào file JSON để dùng trong frontend
-# with open('chart_data_filtered_final.json', 'w') as f:
-#     f.write(chart_data_json)
-
-
-if __name__ == '__main__':
-    print("---------------------Start Analysis------------------------")
-    pcap_id = sys.argv[1]
-    process_analysis_pcap(pcap_id)
-    print("---------------------Finish Analysis-----------------------")
+file_path = 'test_data.pcapng'
+chart_data_json = analyze_pcap_for_chart(file_path, num_intervals=8)  # Phân tích với 8 khoảng thời gian
+print(chart_data_json)
+# Lưu dữ liệu chart vào file JSON để dùng trong frontend
+with open('chart_data_filtered_final.json', 'w') as f:
+    f.write(chart_data_json)

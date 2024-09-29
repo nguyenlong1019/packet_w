@@ -1,38 +1,9 @@
 import pyshark
 import json
 from collections import defaultdict
-from datetime import datetime, timedelta 
-import os 
-import django 
-from django.core.files.base import ContentFile  
-import sys 
+from datetime import datetime, timedelta
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'packet_server.settings')
-django.setup()
-
-from core.models.pcap_file import PcapFileUpload 
-
-ALLOWED_PROTOCOLS = {'IP', 'ICMP', 'ARP', 'IPv6', 'ICMPV6', 'TCP', 'UDP', 'QUIC', 'SCTP',
-                     'HTTP', 'HTTPS', 'FTP', 'DNS', 'DHCP', 'SMTP', 'POP3', 'IMAP', 
-                     'MQTT', 'TLS', 'SSL', 'IPSec', 'Ethernet', 'MPLS', 'VLAN'}
-from django.db import transaction 
-
-
-def process_analysis_pcap(pcap_id):
-    with transaction.atomic():
-        instance = PcapFileUpload.objects.get(id=pcap_id)
-        file_path = instance.file_upload.path  
-        
-        chart_data_json = analyze_pcap_for_chart(file_path, num_intervals=8)
-        json_content = ContentFile(chart_data_json)
-
-        json_filename = f"analysis_{instance.id}.json"
-        instance.analysis_json_file.save(json_filename, json_content)
-
-        instance.save()
-
-
-def analyze_pcap_for_chart(file_path, num_intervals=8):
+def analyze_pcap_for_chart(file_path, time_interval=10):
     protocol_stats = defaultdict(lambda: defaultdict(lambda: {'packet_count': 0, 'total_bytes': 0}))
     start_time = None
     end_time = None
@@ -59,9 +30,7 @@ def analyze_pcap_for_chart(file_path, num_intervals=8):
 
         # Tổng thời gian của toàn bộ file PCAP
         total_duration = (end_time - start_time).total_seconds()
-
-        # Tính toán khoảng thời gian cho mỗi interval
-        interval_duration = total_duration / num_intervals
+        number_of_intervals = int(total_duration / time_interval) + 1
 
         # Quay lại và phân tích chi tiết cho từng packet
         cap.close()
@@ -73,13 +42,9 @@ def analyze_pcap_for_chart(file_path, num_intervals=8):
                 packet_size = int(packet.length)
                 packet_time = datetime.fromtimestamp(float(packet.sniff_timestamp))
 
-                # Chỉ xử lý nếu giao thức thuộc danh sách được phép
-                if protocol not in ALLOWED_PROTOCOLS:
-                    continue
-
-                # Xác định khoảng thời gian hiện tại (time slot) dựa trên số interval
+                # Xác định khoảng thời gian hiện tại (time slot)
                 time_delta = (packet_time - start_time).total_seconds()
-                time_slot = int(time_delta // interval_duration)  # Lấy phần nguyên
+                time_slot = int(time_delta // time_interval)  # Lấy phần nguyên
 
                 # Tăng số lượng packet và tổng số bytes cho giao thức tương ứng tại time_slot
                 protocol_stats[time_slot][protocol]['packet_count'] += 1
@@ -96,7 +61,7 @@ def analyze_pcap_for_chart(file_path, num_intervals=8):
 
     # Tạo cấu trúc dữ liệu để dùng cho vẽ biểu đồ
     chart_data = {
-        'labels': [f"{round(i*interval_duration, 3)}s" for i in range(num_intervals + 1)],
+        'labels': [f"{i*time_interval}s" for i in range(number_of_intervals)],
         'datasets': []
     }
 
@@ -108,7 +73,7 @@ def analyze_pcap_for_chart(file_path, num_intervals=8):
 
     for protocol in all_protocols:
         protocol_data = []
-        for i in range(num_intervals + 1):
+        for i in range(number_of_intervals):
             if i in protocol_stats and protocol in protocol_stats[i]:
                 protocol_data.append(protocol_stats[i][protocol]['total_bytes'] / 1024)  # Dữ liệu tính bằng kB
             else:
@@ -122,10 +87,9 @@ def analyze_pcap_for_chart(file_path, num_intervals=8):
             'fill': True,
             'tension': 0.4
         })
-    # print(chart_data_json)
+
     # Chuyển dữ liệu thành JSON để dùng cho vẽ biểu đồ
     return json.dumps(chart_data, indent=4)
-    # return chart_data 
 
 
 def get_color(protocol):
@@ -135,18 +99,17 @@ def get_color(protocol):
         'ICMP': 'rgba(255, 159, 64, 1)',
         'ARP': 'rgba(75, 192, 192, 1)',
         'IPv6': 'rgba(153, 102, 255, 1)',
-        'ICMPV6': 'rgba(128, 0, 0, 1)',
         'TCP': 'rgba(54, 162, 235, 1)',
         'UDP': 'rgba(255, 99, 132, 1)',
-        'QUIC': 'rgba(0, 206, 86, 1)',
-        'SCTP': 'rgba(150, 150, 0, 1)',
+        'SCTP': 'rgba(255, 206, 86, 1)',
+        'QUIC': 'rgba(75, 192, 192, 1)',
         'HTTP': 'rgba(0, 200, 83, 1)',
         'HTTPS': 'rgba(139, 0, 139, 1)',
         'FTP': 'rgba(0, 255, 255, 1)',
         'DNS': 'rgba(255, 99, 132, 1)',
         'DHCP': 'rgba(255, 165, 0, 1)',
         'SMTP': 'rgba(0, 128, 128, 1)',
-        'POP3': 'rgba(255, 20, 147, 1)',
+        'POP3': 'rgba(0, 255, 0, 1)',
         'IMAP': 'rgba(64, 224, 208, 1)',
         'MQTT': 'rgba(128, 0, 128, 1)',
         'TLS': 'rgba(255, 206, 86, 1)',
@@ -166,18 +129,17 @@ def get_background_color(protocol):
         'ICMP': 'rgba(255, 159, 64, 0.2)',
         'ARP': 'rgba(75, 192, 192, 0.2)',
         'IPv6': 'rgba(153, 102, 255, 0.2)',
-        'ICMPV6': 'rgba(128, 0, 0, 0.2)',
         'TCP': 'rgba(54, 162, 235, 0.2)',
         'UDP': 'rgba(255, 99, 132, 0.2)',
-        'QUIC': 'rgba(0, 206, 86, 0.2)',
-        'SCTP': 'rgba(150, 150, 0, 0.2)',
+        'SCTP': 'rgba(255, 206, 86, 0.2)',
+        'QUIC': 'rgba(75, 192, 192, 0.2)',
         'HTTP': 'rgba(0, 200, 83, 0.2)',
         'HTTPS': 'rgba(139, 0, 139, 0.2)',
         'FTP': 'rgba(0, 255, 255, 0.2)',
         'DNS': 'rgba(255, 99, 132, 0.2)',
         'DHCP': 'rgba(255, 165, 0, 0.2)',
         'SMTP': 'rgba(0, 128, 128, 0.2)',
-        'POP3': 'rgba(255, 20, 147, 0.2)',
+        'POP3': 'rgba(0, 255, 0, 0.2)',
         'IMAP': 'rgba(64, 224, 208, 0.2)',
         'MQTT': 'rgba(128, 0, 128, 0.2)',
         'TLS': 'rgba(255, 206, 86, 0.2)',
@@ -191,16 +153,9 @@ def get_background_color(protocol):
 
 
 # Ví dụ sử dụng hàm
-# file_path = 'test_data.pcapng'
-# chart_data_json = analyze_pcap_for_chart(file_path, num_intervals=8)  # Phân tích với 8 khoảng thời gian
-# print(chart_data_json)
-# # Lưu dữ liệu chart vào file JSON để dùng trong frontend
-# with open('chart_data_filtered_final.json', 'w') as f:
+file_path = 'test_data.pcapng'
+chart_data_json = analyze_pcap_for_chart(file_path, time_interval=10)  # Phân tích theo khoảng thời gian 10 giây
+print(chart_data_json)
+# Lưu dữ liệu chart vào file JSON để dùng trong frontend
+# with open('chart_data.json', 'w') as f:
 #     f.write(chart_data_json)
-
-
-if __name__ == '__main__':
-    print("---------------------Start Analysis------------------------")
-    pcap_id = sys.argv[1]
-    process_analysis_pcap(pcap_id)
-    print("---------------------Finish Analysis-----------------------")

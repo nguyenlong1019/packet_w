@@ -30,6 +30,9 @@ class PcapFileUpload(models.Model):
     smtp_file = models.FileField(upload_to='smtp_exports/', null=True, blank=True)
     ssh_file = models.FileField(upload_to='ssh_exports/', null=True, blank=True)
 
+    analysis_json_file = models.FileField(upload_to='json_data_analysis/', null=True, blank=True)
+
+
     report_file = models.FileField(upload_to='reports/', null=True, blank=True)
     
     class Meta:
@@ -60,3 +63,8 @@ def generate_files(sender, instance, created, **kwargs):
     if created:
         # print("Current working directory:", os.getcwd())
         subprocess.Popen(['python', f'process_pcap.py', str(instance.id)])
+        # subprocess.Popen(['python', f'process_data.py', str(instance.id)])
+
+        # subprocess.run(['python', f'process_pcap.py', str(instance.id)], check=True)
+        # subprocess.run(['python', f'process_data.py', str(instance.id)], check=True)
+
