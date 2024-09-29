@@ -27,6 +27,7 @@ def index_view(request):
     return render(request, 'core/index.html', context, status=200)
 
 
+@login_required(login_url="/login/")
 def analyze_pcap_api(request, pk):
     try:
         pcap = PcapFileUpload.objects.get(pk=pk)
@@ -89,19 +90,6 @@ def analyze_pcap_api(request, pk):
             print(packet)
             break
 
-
-
-
-def results(request):
-    uploaded_file = PcapFileUpload.objects.last()
-    file_path = uploaded_file.file.path
-    protocol_stats = analyze_pcap(file_path)
-    
-    context = {
-        'protocol_stats': protocol_stats,
-        'file_name': uploaded_file.file.name
-    }
-    return render(request, 'analysis/results.html', context)
 
 
 def login_view(request):

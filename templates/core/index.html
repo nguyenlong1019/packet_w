@@ -80,8 +80,8 @@
     </div>
   
     <div class="side-tabcontent" id="">
-      <form method="POST" action="{% url 'export-data' id %}" class="w-50 mb-3">
-        {% csrf_token %}
+      <form method="GET" action="{% url 'export-data' id %}" class="w-50 mb-3">
+        <!-- {% csrf_token %} -->
         <div class="input-group">
           <select class="form-select" name="format_export" id="" required>
             <option>Select data export</option>
@@ -97,8 +97,8 @@
             <option value="SMTP Export">SMTP Export</option>
             <option value="SSH Export">SSH Export</option>
           </select>
-          <!-- <button type="submit" class="btn btn-primary">Export</button> -->
-          <a href="{% url 'download-export' %}" class="btn btn-primary">Export</a>
+          <button type="submit" class="btn btn-primary">Export</button>
+          <!-- <a href="{% url 'download-export' %}" class="btn btn-primary">Export</a> -->
         </div>
 
       </form> 
