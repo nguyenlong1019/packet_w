@@ -33,7 +33,9 @@ class PcapFileUpload(models.Model):
     analysis_json_file = models.FileField(upload_to='json_data_analysis/', null=True, blank=True)
 
 
-    report_file = models.FileField(upload_to='reports/', null=True, blank=True)
+    report_file = models.FileField(upload_to='reports/', null=True, blank=True) 
+
+    status_completed = models.BooleanField(default=False)
     
     class Meta:
         ordering = ('-uploaded_at',)

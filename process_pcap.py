@@ -66,6 +66,8 @@ def process_pcap(pcap_id):
         json_filename = f"analysis_{instance.id}.json"
         instance.analysis_json_file.save(json_filename, json_content)
 
+        instance.status_completed = True
+
         instance.save()
 
 

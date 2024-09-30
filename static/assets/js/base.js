@@ -6,6 +6,132 @@ window.addEventListener('DOMContentLoaded', function() {
             document.getElementById(targetId).classList.add('none');
         });
     });
+
+    const pk = document.getElementById('default-key').value;
+
+    let intervalId;
+    const ctx = document.getElementById('pcapChart').getContext('2d'); 
+
+    const datasets_samples = [
+      {
+        label: 'Total',
+        data: [21584.81, 15000, 18000, 16000, 17000, 14000, 19892],
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: 'UDP',
+        data: [0, 0, 0, 0, 19598, 0, 0],
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: 'TCP',
+        data: [0, 0, 0, 0, 0.294, 0, 0],
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        fill: true,
+        tension: 0.4,
+      }
+    ];
+
+    function checkStatus() {
+      fetch(`check-status/${pk}`, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.flag) {
+          clearInterval(intervalId);
+          document.getElementById('loading').classList.add('d-none');
+          getMainChartData();
+        }
+        return data.flag;
+      })
+      .catch(error => console.error(error));
+      return false;
+    }
+
+    function getMainChartData() {
+      fetch(`main-analysis/${pk}/`, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.labels && data.datasets) {
+          drawChart(data.labels, data.datasets);
+        } else {
+          drawChart(
+            ['0:0', '15:3:675', '30:7:350', '45:11:25', '0:14:700', '15:18:375', '45:25:725'], 
+            datasets_samples,
+          );
+        }
+      })  
+      .catch((error) => {
+        console.error(error);
+        drawChart(
+          ['0:0', '15:3:675', '30:7:350', '45:11:25', '0:14:700', '15:18:375', '45:25:725'], 
+          datasets_samples,
+        );
+      });
+    }
+
+    function drawChart(labels, datasets) {
+      const data = {
+        labels: labels,
+        datasets: datasets,
+      };
+
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Data (kB)'
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            },
+            legend: {
+              display: true,
+              position: 'top'
+            }
+          }
+        }
+      };
+
+      // Tạo biểu đồ với Chart.js
+      new Chart(ctx, config);
+    }
+
+    function startPolling() {
+      intervalId = setInterval(() => {
+        checkStatus().then(isTrue => {
+          if (isTrue) {
+            clearInterval(intervalId);
+          }
+        });
+      }, 2000);
+    }
+
+    startPolling();
 });
 
 
