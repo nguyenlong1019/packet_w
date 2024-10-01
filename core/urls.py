@@ -12,7 +12,7 @@ urlpatterns = [
     path('main-analysis/<pk>/', main_chart_api, name='main-chart'),
     path('check-status/<pk>/', check_status_api, name='check-status'),
     path('export-data/<pk>/', handle_export_view, name='export-data'),
-    path('download-a/report/', download_report_demo_view, name='download-report'),
+    path('download/report/<pk>/', download_report_view, name='download-report'),
     path('download/export/', download_export_demo_view, name='download-export'),
 ]
 

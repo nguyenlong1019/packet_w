@@ -69,7 +69,7 @@
         <div style="width: 80%; margin: 0 auto;">
           <canvas id="pcapChart"></canvas>
         </div>
-        <a href="{% url 'download-report' %}" class="btn btn-primary text-center">Download Report</a>
+        <a href="{% url 'download-report' id %}" class="btn btn-primary text-center">Download Report</a>
       </div>
 
       <div id="example">
@@ -109,6 +109,7 @@
 
       </form> 
       <div class="container">
+        <h2 class="mb-3">Frame</h2>
         <table class="table table-dark table-hover">
           <thead>
             <tr>
@@ -187,7 +188,9 @@
             </tr>
           </tbody>
         </table>
-        <table class="table table-dark table-hover mt-5">
+
+        <h2 class="mt-5 mb-3">TCP</h2>
+        <table class="table table-dark table-hover">
           <thead>
             <tr>
               <th scope="col">source</th>
@@ -265,6 +268,38 @@
               <td>119.17.200.80:80</td>
               <td>9</td>
               <td>1061</td>
+            </tr>
+            
+          </tbody>
+        </table>
+
+        <h2 class="mt-5">DNS</h2>
+        <small class="mb-3">clz: class: IN (Internet), CH (Chaos - Chaosnet), HS (Hesiod)</small>
+        <table class="table table-dark table-hover">
+          <thead>
+            <tr>
+              <th scope="col">name</th>
+              <th scope="col">type</th>
+              <th scope="col">clz</th>
+              <th scope="col">ttl</th>
+              <th scope="col">address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">graph.microsoft.com</th>
+              <td>CNAME</td>
+              <td>IN</td>
+              <td>8921</td>
+              <td>ags.privatelink.msidentity.com</td>
+            </tr>
+
+            <tr>
+              <th scope="row">www.tm.prd.ags.akadns.net</th>
+              <td>A</td>
+              <td>IN</td>
+              <td>136</td>
+              <td>40.126.35.88</td>
             </tr>
             
           </tbody>
@@ -434,6 +469,28 @@
       Src & Dst IP 
       <br />
       <div class="container mt-5">
+        <table class="table table-dark table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Src</th>
+              <th scope="col">Dst</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">192.168.1.146</th>
+              <td>10.10.1.2; 20.20.3.4; 8.8.8.8</td>
+            </tr>
+
+            <tr>
+              <th scope="row">192.168.1.146</th>
+              <td>10.10.1.2; 20.20.3.4; 8.8.8.8</td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="container mt-5">
         <p>Src 192.168.*.* -> Dst 10.10.1.2, 20.20.3.4, 8.8.8.8, 1.1.1.1, 23.45.67.89, 99.99.99.99, 203.0.113.1, 11.22.33.44, 55.66.77.88, 88.77.66.55</p>
         <p>Src 192.168.*.* -> Dst 1.3.4.3, 34.45.65.34, 34.2.34.6, 192.0.2.1, 198.51.100.2, 203.0.113.3, 11.11.11.11, 22.22.22.22, 33.33.33.33, 44.44.44.44</p>
         <p>Src 192.168.*.* -> Dst 203.0.113.4, 5.6.7.8, 7.8.9.10, 12.13.14.15, 66.77.88.99, 100.200.300.400, 15.15.15.15, 16.16.16.16, 17.17.17.17, 18.18.18.18</p>
@@ -520,7 +577,7 @@
     <div class="side-tabcontent" id="">
       HTTP POST
       <br>
-      <div style="width: 50%; margin: auto;">
+      <div style="width: 25%; margin: auto;">
           <canvas id="httpMethodsChart"></canvas>
       </div>
       <script>
@@ -578,6 +635,86 @@
               config_3
           );
       </script>
+
+
+      <div class="accordion mt-5" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+              192.168.1.146:8137 -> 119.17.200.80:80 [GET]
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title text-white">GET / HTTP/1.1</h5>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-text">Host: timbus.vn</p>
+                  <p class="card-text">Connection: keep-alive</p>
+                  <p class="card-text">Cache-Control: max-age=0</p>
+                  <p class="card-text">Upgrade-Insecure-Requests: 1</p>
+                  <p class="card-text">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36</p>
+                  <p class="card-text">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</p>
+                  <p class="card-text">Accept-Encoding: gzip, deflate</p>
+                  <p class="card-text">Accept-Language: vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5</p>
+                  <p class="card-text">Cookie: ASP.NET_SessionId=qilxr2zprrwoxpiaybyjjowy; _ga=GA1.2.1577484255.1727222809; _gid=GA1.2.1822860936.1727222809; _gat=1; _ga_5XYX6Q8W6V=GS1.2.1727222809.1.0.1727222809.0.0.0</p>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title text-white">HTTP/1.1 200 OK</h5>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-text">Cache-Control: private</p>
+                  <p class="card-text">Content-Type: text/html; charset=utf-8</p>
+                  <p class="card-text">Content-Encoding: gzip</p>
+                  <p class="card-text">Vary: Accept-Encoding</p>
+                  <p class="card-text">Server: Microsoft-IIS/8.0</p>
+                  <p class="card-text">X-AspNet-Version: 4.0.30319</p>
+                  <p class="card-text">X-Powered-By: ASP.NET</p>
+                  <p class="card-text">Access-Control-Allow-Origin: *</p>
+                  <p class="card-text">Date: Wed, 25 Sep 2024 00:06:58 GMT</p>
+                  <p class="card-text">Content-Length: 62798</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+              192.168.1.146:8137 -> 119.17.200.80:80 [POST]
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+            <div class="accordion-body">
+
+
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+              192.168.1.146:8138 -> 119.17.200.80:80 [POST]
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="side-tabcontent" id="">

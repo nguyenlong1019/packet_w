@@ -16,4 +16,8 @@ Data
 
 
 tính năng Export: export 
-export object (FTP-DATA object list, http object list, export TLS session key, export as plain text, csv, xml, json)
+export object (FTP-DATA object list, http object list, export TLS session key, export as plain text, csv, xml, json) 
+
+
+test2.pcapng 
+giao thức: arp, udp, tcp, tls, http, icmpv6, dns 

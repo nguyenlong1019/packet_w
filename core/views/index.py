@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate 
 from django.contrib.auth.models import User
@@ -196,3 +196,19 @@ def download_export_demo_view(request):
     else:
         raise Http404("File not found") 
 
+
+@login_required(login_url='/login/')
+def download_report_view(request, pk):
+    try:
+        pcap = PcapFileUpload.objects.get(pk=pk)
+    except PcapFileUpload.DoesNotExist:
+        return HttpResponse("PCAP file not found", status=404)
+    
+    report_file = pcap.report_file 
+    if report_file and report_file.name:
+        with report_file.open('rb') as file:
+            response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename="{report_file.name}"'
+            return response 
+    else:
+        raise Http404("Report file not found")
