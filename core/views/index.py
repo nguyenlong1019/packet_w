@@ -151,9 +151,9 @@ def register_view(request):
 
         user = User.objects.create_user(username, email, password)
 
-        profile = Profile.objects.create(
-            user=user
-        )
+        # profile = Profile.objects.create(
+        #     user=user
+        # )
 
         if user.profile.is_access:
             login(request, user)
