@@ -104,7 +104,6 @@
             <option value="SSH Export">SSH Export</option>
           </select>
           <button type="submit" class="btn btn-primary">Export</button>
-          <!-- <a href="{% url 'download-export' %}" class="btn btn-primary">Export</a> -->
         </div>
 
       </form> 
@@ -717,7 +716,13 @@
       </div>
     </div>
 
-    <div class="side-tabcontent" id="">
+    <div class="side-tabcontent" id="" style="position: relative;">
+      <div id="overlay-utils" class="d-none d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-light" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
       <!--Convert: c-->
       <div class="c-tabs">
         <button class="c-tablinks" onclick="openCTab(event, 'c-decode-hex')" id="defaultOpen">Decode Hex</button>
@@ -727,14 +732,69 @@
 
       <div id="c-decode-hex" class="c-tabcontent">
         Decode Hex
+        <div class='mt-5'>
+          <div class="" style="display: grid; grid-template-columns: 4fr 1fr 4fr; gap: 24px;">
+            <div class="mb-3">
+              <label for="hexEncodedFormControlTextarea" class="form-label">Hex Encoded</label>
+              <textarea class="form-control" id="hexEncodedFormControlTextarea" rows="17"></textarea>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+              <button id="hexConvertBtn" class="btn btn-primary">
+                <i style="font-size: 32px;" class="fa-solid fa-arrows-left-right"></i>
+              </button>
+            </div>
+            <div class="mb-3">
+              <label for="hexDecodedFormControlTextarea" class="form-label">Hex Decoded</label>
+              <textarea class="form-control" id="hexDecodedFormControlTextarea" rows="17"></textarea>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="c-decode-base64" class="c-tabcontent">
-        Decode Base64
+        Decode Base64 
+        <div class='mt-5'>
+          <div class="" style="display: grid; grid-template-columns: 4fr 1fr 4fr; gap: 24px;">
+            <div class="mb-3">
+              <label for="base64EncodedFormControlTextarea" class="form-label">Hex Encoded</label>
+              <textarea class="form-control" id="base64EncodedFormControlTextarea" rows="17"></textarea>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+              <button id="base64ConvertBtn" class="btn btn-primary">
+                <i style="font-size: 32px;" class="fa-solid fa-arrows-left-right"></i>
+              </button>
+            </div>
+            <div class="mb-3">
+              <label for="base64DecodedFormControlTextarea1" class="form-label">Hex Decoded</label>
+              <textarea class="form-control" id="base64DecodedFormControlTextarea1" rows="17"></textarea>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="c-time" class="c-tabcontent">
         Convert Time 
+        <select class="form-select mt-3" id='ctime-type' name='ctime-type' aria-label="Default select example">
+          <option value="1">Unix to Datetime</option>
+          <option value="2">Datetime to Unix</option>
+        </select>
+        <div class='mt-3'>
+          <div class="" style="display: grid; grid-template-columns: 4fr 1fr 4fr; gap: 24px;">
+            <div class="mb-3">
+              <label for="ctimeInpFormControlTextarea" class="form-label">Hex Encoded</label>
+              <textarea class="form-control" id="ctimeInpFormControlTextarea" rows="17"></textarea>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+              <button id="cTimeBtn" class="btn btn-primary">
+                <i style="font-size: 32px;" class="fa-solid fa-arrows-left-right"></i>
+              </button>
+            </div>
+            <div class="mb-3">
+              <label for="ctimeOutFormControlTextarea" class="form-label">Hex Decoded</label>
+              <textarea class="form-control" id="ctimeOutFormControlTextarea" rows="17"></textarea>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>

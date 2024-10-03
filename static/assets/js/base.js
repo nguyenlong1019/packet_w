@@ -132,6 +132,111 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     startPolling();
+
+    const hexConvertBtn = document.getElementById('hexConvertBtn');
+    hexConvertBtn.addEventListener('click', () => {
+      const hexInput = document.getElementById('hexEncodedFormControlTextarea').value;
+      const hexOutputElem = document.getElementById('hexDecodedFormControlTextarea');
+      if (hexInput == '') {
+        alert("Vui lòng nhập hex encoded string");
+        return;
+      }
+
+      document.getElementById('overlay-utils').classList.remove('d-none');
+
+      fetch('/convert/hex-decode/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({
+          'hex_string': hexInput,
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('overlay-utils').classList.add('d-none');
+        hexOutputElem.value = data.res;
+      })
+      .catch(error => {
+        document.getElementById('overlay-utils').classList.add('d-none');
+        console.error(error);
+        hexOutputElem.value = error;
+      });
+    });
+
+
+    const base64ConvertBtn = document.getElementById('base64ConvertBtn');
+    base64ConvertBtn.addEventListener('click', () => {
+      const base64Input = document.getElementById('base64EncodedFormControlTextarea').value;
+      const base64OutputElem = document.getElementById('base64DecodedFormControlTextarea1');
+      if (base64Input == '') {
+        alert("Vui lòng nhập base64 encoded string");
+        return;
+      }
+
+      document.getElementById('overlay-utils').classList.remove('d-none');
+
+      fetch('/convert/base64-decode/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({
+          'encoded_string': base64Input,
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('overlay-utils').classList.add('d-none');
+        base64OutputElem.value = data.res;
+      })
+      .catch(error => {
+        document.getElementById('overlay-utils').classList.add('d-none');
+        console.error(error);
+        base64OutputElem.value = error;
+      });
+
+    });
+
+    const cTimeBtn = document.getElementById('cTimeBtn');
+    cTimeBtn.addEventListener('click', () => {
+      const selectType = document.getElementById('ctime-type').value;
+      const cTimeInp = document.getElementById('ctimeInpFormControlTextarea').value;
+      const cTimeOutElem = document.getElementById('ctimeOutFormControlTextarea');
+      if (cTimeInp == '') {
+        alert("Vui lòng nhập thời gian chuyển đổi");
+        return;
+      }
+
+      document.getElementById('overlay-utils').classList.remove('d-none'); 
+
+      fetch('/convert/c-time/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({
+          'ctype': selectType,
+          'time_string': cTimeInp,
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('overlay-utils').classList.add('d-none');
+        cTimeOutElem.value = data.res;
+      })
+      .catch(error => {
+        document.getElementById('overlay-utils').classList.add('d-none');
+        console.error(error);
+        cTimeOutElem.value = error;
+      });
+
+    });
+
 });
 
 

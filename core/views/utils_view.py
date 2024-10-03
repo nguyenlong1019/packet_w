@@ -2,6 +2,8 @@ import binascii
 import base64 
 from datetime import datetime 
 from django.http import JsonResponse 
+import json 
+from django.contrib.auth.decorators import login_required 
 
 
 def decode_hex(hex_string):
@@ -34,6 +36,7 @@ def decode_base64(encoded_string):
 def convert_unix_timestamp(timestamp):
     try:
         # convert from unix timestamp to datetime format 
+        timestamp = int(timestamp)
         dt_object = datetime.fromtimestamp(timestamp)
         return dt_object.strftime("%Y-%m-%d %H:%M:%S")
     except (OSError, OverflowError, ValueError):
@@ -57,22 +60,49 @@ def convert_datetime_to_unix(datetime_string, format_string="%Y-%m-%d %H:%M:%S")
 # print(convert_datetime_to_unix(datetime_string))  # Output: 1633072800
 
 
+@login_required(login_url='/login/')
 def decode_hex_view(request):
     if request.method == 'POST':
-        hex_string = request.POST.get('hex_string')
+        # hex_string = request.POST.get('hex_string')
+        data = json.loads(request.body)
+        hex_string = data.get('hex_string')
         res = decode_hex(hex_string) 
         return JsonResponse({
             'res': res 
         }, status=200)
 
 
+@login_required(login_url='/login/')
 def decode_base64_view(request):
     if request.method == 'POST':
-        encoded_string = request.POST.get('encoded_string')
+        # encoded_string = request.POST.get('encoded_string')
+        data = json.loads(request.body)
+        encoded_string = data.get('encoded_string')
         res = decode_base64(encoded_string)
         return JsonResponse({
             'res': res 
         }, status=200)
 
+
+@login_required(login_url='/login/')
+def convert_time_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        type = data.get('ctype')
+        time_string = data.get('time_string')
+        if type == '1':
+            res = convert_unix_timestamp(time_string)
+            return JsonResponse({
+                'res': res,
+            }, status=200)
+        elif type == '2':
+            res = convert_datetime_to_unix(time_string)
+            return JsonResponse({
+                'res': res 
+            }, status=200)
+        else:
+            return JsonResponse({
+                'res': 'Ctype Invalid'
+            })
 
 

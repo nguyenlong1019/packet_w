@@ -2,6 +2,7 @@ from django.urls import path
 from core.views.index import * 
 from core.views.export import * 
 from core.views.charts import * 
+from core.views.utils_view import * 
 
 
 urlpatterns = [
@@ -13,6 +14,8 @@ urlpatterns = [
     path('check-status/<pk>/', check_status_api, name='check-status'),
     path('export-data/<pk>/', handle_export_view, name='export-data'),
     path('download/report/<pk>/', download_report_view, name='download-report'),
-    path('download/export/', download_export_demo_view, name='download-export'),
+    path('convert/hex-decode/', decode_hex_view, name='decode-hex'),
+    path('convert/base64-decode/', decode_base64_view, name='decode-base64'),
+    path('convert/c-time/', convert_time_view, name='c-time'),
 ]
 
