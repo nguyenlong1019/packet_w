@@ -121,8 +121,8 @@
               <th scope="col">info</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
+          <tbody id="frame-body">
+            {% comment %} <tr>
               <th scope="row">1</th>
               <td>0</td>
               <td>192.168.1.1</td>
@@ -184,7 +184,7 @@
               <td>UDP</td>
               <td>60</td>
               <td>User Datagram Protocol, Src Port: 5353, Dst Port: 5353</td>
-            </tr>
+            </tr> {% endcomment %}
           </tbody>
         </table>
 
@@ -194,15 +194,23 @@
             <tr>
               <th scope="col">source</th>
               <th scope="col">dest</th>
+              <th scope="col">s-accuracy</th>
+              <th scope="col">s-throughput</th>
+              <th scope="col">t-accuracy</th>
+              <th scope="col">t-throughput</th>
               <th scope="col">count</th>
               <th scope="col">throughput</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
+          <tbody id="tcp-body">
+            {% comment %} <tr>
               <th scope="row">2606:4700:20::681a:af0:443</th>
               <td>2402:800:61c5:adec:d1b7:ee9d:ae7b:af50:7813</td>
               <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
               <td>0</td>
             </tr>
 
@@ -269,7 +277,7 @@
               <td>1061</td>
             </tr>
             
-          </tbody>
+          </tbody> {% endcomment %}
         </table>
 
         <h2 class="mt-5">DNS</h2>
@@ -284,7 +292,7 @@
               <th scope="col">address</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="dns-body">
             <tr>
               <th scope="row">graph.microsoft.com</th>
               <td>CNAME</td>

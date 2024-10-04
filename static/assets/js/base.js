@@ -63,7 +63,61 @@ window.addEventListener('DOMContentLoaded', function() {
       .then(response => response.json())
       .then(data => {
         if (data && data.labels && data.datasets) {
+          
+          
+          const frameBodyTable = document.getElementById('frame-body');
+          const frames = data.frames;
+          if (frames.length == 0) {
+            frameBodyTable.innerHTML = `<p>Không có dữ liệu</p>`;
+          } else {
+            frames.forEach(item => {
+              frameBodyTable.innerHTML += `
+                <tr>
+                  <th scope="row">${item[0]}</th>
+                  <td>${item[1]}</td>
+                  <td>${item[2]}</td>
+                  <td>${item[3]}</td>
+                  <td>${item[4]}</td>
+                  <td>${item[5]}</td>
+                  <td>${item[6]}</td>
+                </tr>
+              `;
+            });
+          }
+
+          const tcp = data.tcp;
+          const tcpBodyTable = document.getElementById('tcp-body');
+          if (tcp.length == 0) {
+            tcpBodyTable.innerHTML = `<p>Không có dữ liệu</p>`;
+          } else {
+            tcp.forEach(item => {
+              tcpBodyTable.innerHTML += `
+                <tr>
+                  <th scope="row">${item[0]}</th>
+                  <td>${item[1]}</td>
+                  <td>${item[2]}</td>
+                  <td>${item[3]}</td>
+                  <td>${item[4]}</td>
+                  <td>${item[5]}</td>
+                  <td>${item[6]}</td>
+                  <td>${item[3] + item[5]}</td>
+                </tr>
+              `;
+            });
+          }
+
+          // const dns = data.dns;
+          // const dnsBodyTable = document.getElementById('dns-body');
+          // if (dns.length == 0) {
+          //   dnsBodyTable.innerHTML = `<p>Không có dữ liệu</p>`;
+          // } else {
+          //   dns.forEach(item => {
+
+          //   });
+          // }
+
           drawChart(data.labels, data.datasets);
+
         } else {
           drawChart(
             ['0:0', '15:3:675', '30:7:350', '45:11:25', '0:14:700', '15:18:375', '45:25:725'], 

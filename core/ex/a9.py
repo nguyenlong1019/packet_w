@@ -10,6 +10,7 @@ for p in cap:
     if 'DHCP' in p:
         print(p)
         print(dir(p.dhcp))
+        print(p.dhcp.hw_mac_addr)
         print(p.dhcp.option_requested_ip_address)
         print(p.dhcp.option_hostname)
         break

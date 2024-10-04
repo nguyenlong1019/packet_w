@@ -158,6 +158,7 @@ def get_protocol_info(packet):
 #     print(p)
 #     break
 
+ind = 1
 # Iterate through the packets and extract required fields
 for i, packet in enumerate(cap):
     # Extracting timestamp
@@ -168,9 +169,10 @@ for i, packet in enumerate(cap):
     
     # Extract length if available
     length = packet.length if hasattr(packet, 'length') else 'N/A'
-    
-    # Append the extracted data to the list
-    data.append([i+1, time, src, dst, protocol, length, info])
+    if 'N/A' not in (time, src, dst, protocol, length, info):
+        # Append the extracted data to the list
+        data.append([ind, time, src, dst, protocol, length, info])
+        ind += 1
 
 # Print the table (optional: format it using pandas or any other library)
 print("Index\tTime\t\t\tSource\t\t\tDestination\t\tProtocol\tLength\tInfo")

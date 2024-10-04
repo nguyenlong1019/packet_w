@@ -14,6 +14,10 @@ from docx.shared import Pt
 from docx.oxml.ns import qn
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Inches 
+import pyshark 
+import socket 
+import dns.resolver 
+from collections import defaultdict 
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'packet_server.settings')
@@ -74,7 +78,9 @@ def process_pcap(pcap_id):
         json_filename = f"analysis_{instance.id}.json"
         instance.analysis_json_file.save(json_filename, json_content)
 
-        instance.status_completed = True
+        instance.status_completed = True 
+
+        print(f"------------------DONE {pcap_id}----------------------")
 
         instance.save()
 
@@ -199,6 +205,168 @@ def generate_tls_keys(capture):
     return tls_keys 
 
 
+# Function to check protocol and extract information
+def get_protocol_info(packet):
+    protocol = 'N/A'
+    info = 'N/A'
+    src = 'N/A'
+    dst = 'N/A'
+    
+    try:
+        # Layer 2: Ethernet, MPLS, VLAN
+        if hasattr(packet, 'eth') and 'Ethernet' in ALLOWED_PROTOCOLS:
+            src = packet.eth.src
+            dst = packet.eth.dst
+            protocol = 'Ethernet'
+
+        if hasattr(packet, 'mpls') and 'MPLS' in ALLOWED_PROTOCOLS:
+            protocol = 'MPLS'
+            info = 'MPLS Label: {}'.format(packet.mpls.label)
+
+        if hasattr(packet, 'vlan') and 'VLAN' in ALLOWED_PROTOCOLS:
+            protocol = 'VLAN'
+            info = 'VLAN ID: {}'.format(packet.vlan.id)
+
+        # Layer 3: IP, ARP, IPv6
+        if hasattr(packet, 'ip') and 'IP' in ALLOWED_PROTOCOLS:
+            src = packet.ip.src
+            dst = packet.ip.dst
+            protocol = 'IP'
+
+        if hasattr(packet, 'arp') and 'ARP' in ALLOWED_PROTOCOLS:
+            src = packet.arp.src_proto_ipv4
+            dst = packet.arp.dst_proto_ipv4
+            protocol = 'ARP'
+            info = '{} request'.format(packet.arp.opcode)
+
+        if hasattr(packet, 'ipv6') and 'IPv6' in ALLOWED_PROTOCOLS:
+            src = packet.ipv6.src
+            dst = packet.ipv6.dst
+            protocol = 'IPv6'
+
+        # Layer 3: ICMP, ICMPv6
+        if hasattr(packet, 'icmp') and 'ICMP' in ALLOWED_PROTOCOLS:
+            protocol = 'ICMP'
+            info = 'Type: {}, Code: {}'.format(packet.icmp.type, packet.icmp.code)
+
+        if hasattr(packet, 'icmpv6') and 'ICMPV6' in ALLOWED_PROTOCOLS:
+            protocol = 'ICMPV6'
+            info = 'Type: {}, Code: {}'.format(packet.icmpv6.type, packet.icmpv6.code)
+
+        # Layer 4: TCP, UDP, SCTP, QUIC
+        if hasattr(packet, 'tcp') and 'TCP' in ALLOWED_PROTOCOLS:
+            src_port = packet.tcp.srcport
+            dst_port = packet.tcp.dstport
+            protocol = 'TCP'
+            info = 'Src Port: {}, Dst Port: {}'.format(src_port, dst_port)
+
+        if hasattr(packet, 'udp') and 'UDP' in ALLOWED_PROTOCOLS:
+            src_port = packet.udp.srcport
+            dst_port = packet.udp.dstport
+            protocol = 'UDP'
+            info = 'Src Port: {}, Dst Port: {}'.format(src_port, dst_port)
+
+        if hasattr(packet, 'sctp') and 'SCTP' in ALLOWED_PROTOCOLS:
+            protocol = 'SCTP'
+            info = 'SCTP Stream: {}'.format(packet.sctp.stream)
+
+        if hasattr(packet, 'quic') and 'QUIC' in ALLOWED_PROTOCOLS:
+            protocol = 'QUIC'
+            info = 'QUIC Stream: {}'.format(packet.quic.stream_id)
+
+        # Application Layer Protocols: HTTP, HTTPS, DNS, DHCP, etc.
+        if hasattr(packet, 'http') and 'HTTP' in ALLOWED_PROTOCOLS:
+            protocol = 'HTTP'
+            info = packet.http.host if hasattr(packet.http, 'host') else 'N/A'
+
+        if hasattr(packet, 'ssl') and 'SSL' in ALLOWED_PROTOCOLS:
+            protocol = 'SSL/TLS'
+            info = 'SSL Record Version: {}'.format(packet.ssl.record_version) if hasattr(packet.ssl, 'record_version') else 'N/A'
+
+        if hasattr(packet, 'dns') and 'DNS' in ALLOWED_PROTOCOLS:
+            protocol = 'DNS'
+            info = 'Query Name: {}'.format(packet.dns.qry_name) if hasattr(packet.dns, 'qry_name') else 'N/A'
+
+        if hasattr(packet, 'dhcp') and 'DHCP' in ALLOWED_PROTOCOLS:
+            protocol = 'DHCP'
+            info = 'Client IP: {}'.format(packet.dhcp.client_ip_addr) if hasattr(packet.dhcp, 'client_ip_addr') else 'N/A'
+
+        if hasattr(packet, 'ftp') and 'FTP' in ALLOWED_PROTOCOLS:
+            protocol = 'FTP'
+            info = 'Command: {}'.format(packet.ftp.request_command) if hasattr(packet.ftp, 'request_command') else 'N/A'
+
+        if hasattr(packet, 'smtp') and 'SMTP' in ALLOWED_PROTOCOLS:
+            protocol = 'SMTP'
+            info = 'Command: {}'.format(packet.smtp.command) if hasattr(packet.smtp, 'command') else 'N/A'
+
+        if hasattr(packet, 'pop') and 'POP3' in ALLOWED_PROTOCOLS:
+            protocol = 'POP3'
+            info = 'Command: {}'.format(packet.pop.request_command) if hasattr(packet.pop, 'request_command') else 'N/A'
+
+        if hasattr(packet, 'imap') and 'IMAP' in ALLOWED_PROTOCOLS:
+            protocol = 'IMAP'
+            info = 'Command: {}'.format(packet.imap.request_command) if hasattr(packet.imap, 'request_command') else 'N/A'
+
+        if hasattr(packet, 'mqtt') and 'MQTT' in ALLOWED_PROTOCOLS:
+            protocol = 'MQTT'
+            info = 'Message Type: {}'.format(packet.mqtt.msgtype) if hasattr(packet.mqtt, 'msgtype') else 'N/A'
+
+    except AttributeError:
+        info = 'N/A'
+    
+    # Return the protocol, source, destination, and info
+    return protocol, src, dst, info
+
+
+def check_record_type(domain):
+    try:
+        # Kiểm tra bản ghi A
+        answers = dns.resolver.resolve(domain, 'A')
+        return 'A'
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        pass
+    try:
+        # Kiểm tra bản ghi AAAA
+        answers = dns.resolver.resolve(domain, 'AAAA')
+        return 'AAAA'
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        pass
+    try:
+        # Kiểm tra bản ghi CNAME
+        answers = dns.resolver.resolve(domain, 'CNAME')
+        return 'CNAME'
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        pass
+    try:
+        # Kiểm tra bản ghi MX
+        answers = dns.resolver.resolve(domain, 'MX')
+        return 'MX'
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        pass
+    try:
+        # Kiểm tra bản ghi NS
+        answers = dns.resolver.resolve(domain, 'NS')
+        return 'NS'
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        return 'N/A'
+
+
+# Hàm lấy địa chỉ IP từ tên miền (sử dụng socket)
+def get_ip(domain):
+    try:
+        return socket.gethostbyname(domain)
+    except socket.gaierror:
+        return 'N/A'
+
+
+# Hàm để lấy tên miền từ địa chỉ IP
+def get_domain_from_ip(ip):
+    try:
+        return socket.gethostbyaddr(ip)[0]
+    except (socket.herror, socket.gaierror):
+        return 'N/A'
+
+
 def analyze_pcap_for_chart(cap, num_intervals=8):
     protocol_stats = defaultdict(lambda: defaultdict(lambda: {'packet_count': 0, 'total_bytes': 0}))
     start_time = None
@@ -288,8 +456,161 @@ def analyze_pcap_for_chart(cap, num_intervals=8):
         })
     # print(chart_data_json)
     # Chuyển dữ liệu thành JSON để dùng cho vẽ biểu đồ
+
+    # handle FRAME
+    data_frames = []
+    for i, packet in enumerate(cap):
+        # Extracting timestamp
+        time = packet.sniff_time.timestamp() if hasattr(packet, 'sniff_time') else 'N/A'
+        
+        # Get protocol information
+        protocol, src, dst, info = get_protocol_info(packet)
+        
+        # Extract length if available
+        length = packet.length if hasattr(packet, 'length') else 'N/A'
+        
+        # Append the extracted data to the list 
+        if 'N/A' not in (time, src, dst, protocol, length, info):
+            data_frames.append([i+1, time, src, dst, protocol, length, info])
+
+    chart_data['frames'] = data_frames  
+
+    # handle TCP 
+    data_tcp = []
+    for packet in cap:
+        try:
+            # Chỉ lấy gói tin TCP và có IP
+            if 'TCP' in packet and hasattr(packet, 'ip'):
+                # Lấy các thông tin cơ bản từ gói tin
+                src = f"{packet.ip.src}:{packet.tcp.srcport}" if hasattr(packet, 'ip') else None
+                dst = f"{packet.ip.dst}:{packet.tcp.dstport}" if hasattr(packet, 'ip') else None
+                
+                # Chỉ thêm vào danh sách nếu cả src và dst đều tồn tại
+                if src and dst:
+                    # Lấy độ dài gói tin để tính throughput
+                    length = int(packet.length) if hasattr(packet, 'length') else 0
+                    
+                    # Giả lập giá trị accuracy và throughput
+                    s_accuracy = f"{round(100 * length / 1500, 2)}%"  # 1500 bytes là kích thước MTU chuẩn
+                    s_throughput = length * 8  # Throughput = độ dài gói * 8 (bits)
+                    
+                    t_accuracy = f"{round(100 * (length / 1500), 2)}%"
+                    t_throughput = s_throughput // 2  # Ví dụ giả lập throughput tại đích
+                    
+                    # Thêm dữ liệu vào danh sách
+                    data_tcp.append([src, dst, s_accuracy, s_throughput, t_accuracy, t_throughput, length])
+
+        except AttributeError as e:
+            # Bỏ qua lỗi nếu có thuộc tính không tồn tại
+            continue 
+    chart_data['tcp'] = data_tcp
+    
+
+    # handle DNS 
+    data_dns = [] 
+    # Lặp qua từng gói tin và lọc gói tin DNS
+    for packet in cap:
+        try:
+            # Chỉ lấy gói tin DNS
+            if 'DNS' in packet:
+                # Lấy tên miền từ truy vấn hoặc phản hồi DNS
+                name = packet.dns.qry_name if hasattr(packet.dns, 'qry_name') else packet.dns.resp_name if hasattr(packet.dns, 'resp_name') else 'N/A'
+                
+                # Kiểm tra loại bản ghi và địa chỉ (A, AAAA, CNAME)
+                if hasattr(packet.dns, 'a'):
+                    address = packet.dns.a  # IPv4
+                    dns_type = 'A'
+                elif hasattr(packet.dns, 'aaaa'):
+                    address = packet.dns.aaaa  # IPv6
+                    dns_type = 'AAAA'
+                elif hasattr(packet.dns, 'cname'):
+                    address = packet.dns.cname  # CNAME
+                    dns_type = 'CNAME'
+                else:
+                    address = 'N/A'
+                    dns_type = 'N/A'
+
+                # TTL và lớp (class)
+                ttl = packet.dns.resp_ttl if hasattr(packet.dns, 'resp_ttl') else 'N/A'
+                clz = 'IN'  # Class Internet (IN) phổ biến
+                
+                # Nếu dns_type là 'N/A' nhưng có địa chỉ, kiểm tra loại bản ghi bằng dnspython
+                if dns_type == 'N/A' and address != 'N/A':
+                    dns_type = check_record_type(name)
+
+                # Nếu address là 'N/A', sử dụng socket để tìm IP
+                if address == 'N/A' and name != 'N/A':
+                    address = get_ip(name)
+
+                # Chỉ thêm vào set nếu name, dns_type, và address không phải 'N/A'
+                if name != 'N/A' and dns_type != 'N/A' and address != 'N/A':
+                    data_dns.add((name, dns_type, clz, ttl, address))
+
+        except AttributeError:
+            # Bỏ qua lỗi nếu gói tin không có thuộc tính mong muốn
+            continue
+    chart_data['dns'] = data_dns
+
+    # dhcp 
+    data_dhcp = []
+    for p in cap:
+        if 'DHCP' in p:
+            data_dhcp.append([p.dhcp.hw_mac_addr, p.dhcp.option_requested_ip_address, p.dhcp.option_hostname])
+    chart_data['dhcp'] = data_dhcp 
+
+    
+    # Src & Dst IP 
+    # data_src_dst_ip = []
+    ip_mapping = defaultdict(set)
+    for packet in cap:
+        try:
+            # Lấy địa chỉ IP nguồn (source) và IP đích (destination)
+            src_ip = packet.ip.src if hasattr(packet, 'ip') else None
+            dst_ip = packet.ip.dst if hasattr(packet, 'ip') else None
+            
+            # Nếu cả source và destination đều tồn tại
+            if src_ip and dst_ip:
+                ip_mapping[src_ip].add(dst_ip)
+
+        except AttributeError:
+            # Bỏ qua các gói tin không có địa chỉ IP
+            continue
+    # chart_data['src_dst'] = ip_mapping
+    chart_data['src_dst'] = {k: list(v) for k, v in ip_mapping.items()}  # Convert set to list
+
+    # Dst Domain 
+    data_dst_domain = []
+    # Lặp qua từng gói tin và lấy thông tin Source, Destination, và Domain
+    for packet in cap:
+        try:
+            # Lấy địa chỉ IP nguồn (src) và đích (dst) nếu có
+            src_ip = packet.ip.src if hasattr(packet, 'ip') else None
+            dst_ip = packet.ip.dst if hasattr(packet, 'ip') else None
+            
+            # Nếu cả IP nguồn và IP đích tồn tại
+            if src_ip and dst_ip:
+                # Lấy tên miền của địa chỉ IP đích
+                domain = get_domain_from_ip(dst_ip)
+                
+                # In thông tin ra terminal 
+                if domain != 'N/A':
+                    # print(f"IP src: {src_ip:<15}  IP dst: {dst_ip:<15}  Domain: {domain}")
+                    data_dst_domain.append([src_ip, dst_ip, domain])
+
+        except AttributeError:
+            # Bỏ qua các gói tin không có địa chỉ IP
+            continue 
+    chart_data['dst_domain'] = data_dst_domain 
+
+
+
+
+
     return json.dumps(chart_data, indent=4)
     # return chart_data 
+
+
+
 
 
 def get_color(protocol):
