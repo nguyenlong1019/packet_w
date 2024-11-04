@@ -26,15 +26,16 @@ SECRET_KEY = 'django-insecure-^&etxhys13za!fb2&w!5fi2ulzle=u%rc%4j$v&=1b$_bt#bc%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# ALLOWED_HOSTS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# CSRF_TRUSTED_ORIGINS = ['https://packetw-production.up.railway.app/', 'packetw-production.up.railway.app']
 
 
 # Application definition
@@ -85,24 +86,24 @@ WSGI_APPLICATION = 'packet_server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# postgresql://postgres:MAXXUFYwUDsKKwUemEWHYWggUvDFELmE@autorack.proxy.rlwy.net:36656/railway
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'HOST': 'autorack.proxy.rlwy.net',
-        'PORT': '36656',
-        'USER': 'postgres',
-        'PASSWORD': 'MAXXUFYwUDsKKwUemEWHYWggUvDFELmE',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# # postgresql://postgres:MAXXUFYwUDsKKwUemEWHYWggUvDFELmE@autorack.proxy.rlwy.net:36656/railway
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'railway',
+#         'HOST': 'autorack.proxy.rlwy.net',
+#         'PORT': '36656',
+#         'USER': 'postgres',
+#         'PASSWORD': 'MAXXUFYwUDsKKwUemEWHYWggUvDFELmE',
+#     }
+# }
 
 
 # Password validation
